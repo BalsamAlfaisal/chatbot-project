@@ -1,0 +1,16 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY backend.py .
+
+# Runtime folders the app writes to — created up front so a fresh
+# container (and a bind-mounted empty host folder) both start out valid.
+RUN mkdir -p chat_logs pdf_store
+
+EXPOSE 5000
+
+CMD ["uvicorn", "backend:app", "--host", "0.0.0.0", "--port", "5000"]

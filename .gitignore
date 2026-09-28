@@ -1,0 +1,13 @@
+.env
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform/
+ssh-keys/
+venv/
+venv~/
+.venv/
+__pycache__/
+chat_logs/
+pdf_store/
+chroma_data/

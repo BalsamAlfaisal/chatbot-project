@@ -1,0 +1,40 @@
+services:
+  chromadb:
+    image: chromadb/chroma:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+
+  backend:
+    image: ${DOCKERHUB_NAMESPACE:-local}/chatbot-backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    restart: unless-stopped
+    environment:
+      KEY_VAULT_NAME: ${KEY_VAULT_NAME}
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./chat_logs:/app/chat_logs
+      - ./pdf_store:/app/pdf_store
+    depends_on:
+      - chromadb
+
+  chatbot:
+    image: ${DOCKERHUB_NAMESPACE:-local}/chatbot-frontend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.chatbot
+    restart: unless-stopped
+    environment:
+      BACKEND_URL: http://backend:5000
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+
+volumes:
+  chroma_data:
